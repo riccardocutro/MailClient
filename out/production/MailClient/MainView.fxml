@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="it.unito.prog3.mailclient.controller.MainController">
+    <top>
+        <ToolBar>
+            <Button text="Nuovo" onAction="#onNew"/>
+            <Button text="Rispondi" onAction="#onReply"/>
+            <Button text="Rispondi a tutti" onAction="#onReplyAll"/>
+            <Button text="Inoltra" onAction="#onForward"/>
+            <Separator/>
+            <Button text="Elimina" onAction="#onDelete"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label text="Stato:"/>
+            <Label fx:id="statusLabel" text="Offline"/>
+        </ToolBar>
+    </top>
+
+    <left>
+        <VBox spacing="6" BorderPane.alignment="CENTER_LEFT">
+            <Label text="Inbox" style="-fx-font-weight: bold; -fx-padding: 8 8 0 8;"/>
+            <ListView fx:id="inboxList" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="6" style="-fx-padding: 8;">
+            <Label fx:id="subjectLabel" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+            <Label fx:id="fromLabel"/>
+            <Label fx:id="toLabel"/>
+            <Label fx:id="dateLabel"/>
+            <TextArea fx:id="bodyArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+</BorderPane>

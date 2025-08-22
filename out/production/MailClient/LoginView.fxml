@@ -1,24 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane xmlns="http://javafx.com/javafx/21"
-          xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="it.unito.prog3.mailclient.controller.LoginController"
-          hgap="12" vgap="12" alignment="CENTER">
-
-    <padding>
-        <Insets top="16" right="16" bottom="16" left="16"/>
-    </padding>
-
-    <children>
-        <Label text="Email:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="emailField" promptText="email@dominio.it"
-                   GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-        <Button text="Login" onAction="#handleLogin"
-                GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-    </children>
-
-</GridPane>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.unito.prog3.mailclient.controller.LoginController"
+      spacing="12" alignment="CENTER" style="-fx-padding: 24;">
+    <Label text="Mail Client" style="-fx-font-size:18; -fx-font-weight:bold;"/>
+    <TextField fx:id="emailField" promptText="you@mail.com" prefWidth="280"/>
+    <HBox spacing="8">
+        <TextField fx:id="hostField" promptText="localhost" prefWidth="160"/>
+        <TextField fx:id="portField" promptText="5555" prefWidth="100"/>
+    </HBox>
+    <Button text="Entra" onAction="#onLogin"/>
+    <Label fx:id="errorLabel" textFill="#dc2626"/>
+</VBox>
