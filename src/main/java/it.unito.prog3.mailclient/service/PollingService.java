@@ -14,7 +14,7 @@ public class PollingService extends ScheduledService<Void> {
 
     public PollingService(ClientCore core, ClientState state) {
         this.core = core; this.state = state;
-        setPeriod(Duration.seconds(3));
+        setPeriod(Duration.seconds(5));
         setRestartOnFailure(true);
     }
 
@@ -26,7 +26,7 @@ public class PollingService extends ScheduledService<Void> {
                     Platform.runLater(() -> {
                         msgs.forEach(m -> {
                             var preview = m.getBody().length() > 80 ? m.getBody().substring(0,80)+"…" : m.getBody();
-                            state.inbox().add(0, new InboxItem(m.getId(), m.getFrom(), m.getSubject(), preview, m.getDate()));
+                            state.inbox().add(0, new InboxItem(m.getId(), m.getFrom(), m.getTo(), m.getSubject(), m.getBody(), m.getDate()));
                             state.lastIdProperty().set(Math.max(state.lastIdProperty().get(), m.getId()));
                         });
                     });

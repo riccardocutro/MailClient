@@ -37,7 +37,7 @@ public class MainController {
         });
 
         inboxList.getSelectionModel().selectedItemProperty().addListener((obs, a, b) -> showDetail(b));
-        statusLabel.setText("Connesso");
+        statusLabel.setText("Non connesso");
 
         // start polling
         polling = new PollingService(core, state);
@@ -54,9 +54,9 @@ public class MainController {
         subjectLabel.setText(it.getSubject());
         fromLabel.setText("Da: " + it.getFrom());
         dateLabel.setText("Data: " + it.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-        // il campo "to" non è nell'InboxItem, lo lasciamo vuoto o lo metti nel preview
+
         toLabel.setText("");
-        bodyArea.setText(it.getPreview()); // volendo puoi tenere anche il body completo lato client
+        bodyArea.setText(it.getBody());
     }
 
     @FXML private void onNew() { openCompose(null); }
@@ -65,7 +65,28 @@ public class MainController {
         if (it==null) return;
         openCompose(new ComposePrefill(it.getFrom(), "Re: " + it.getSubject(), "\n\n--- Risposta ---\n" + it.getPreview()));
     }
-    @FXML private void onReplyAll() { /* opzionale: simile a reply ma aggiungendo altri destinatari */ }
+    @FXML private void onReplyAll() {  var it = inboxList.getSelectionModel().getSelectedItem();
+        if (it == null) return;
+
+        var my = state.userEmailProperty().get();
+
+        java.util.LinkedHashSet<String> recipients = new java.util.LinkedHashSet<>();
+        recipients.add(it.getFrom());
+        recipients.addAll(it.getTo());
+        recipients.remove(my);
+
+        if (recipients.isEmpty()) {
+            new Alert(Alert.AlertType.INFORMATION, "Nessun destinatario valido per 'Rispondi a tutti'.").showAndWait();
+            return;
+        }
+
+        String toCsv = String.join(",", recipients);
+        String subj  = it.getSubject().startsWith("Re:") ? it.getSubject() : "Re: " + it.getSubject();
+        String body  = "\n\n--- Risposta a tutti ---\n" + it.getBody();
+
+        openCompose(new ComposePrefill(toCsv, subj, body));
+    }
+
     @FXML private void onForward() {
         var it = inboxList.getSelectionModel().getSelectedItem();
         if (it==null) return;
@@ -100,4 +121,9 @@ public class MainController {
             new Alert(Alert.AlertType.ERROR, "Errore apertura compose: " + e.getMessage()).showAndWait();
         }
     }
+
+    public void shutdown() {
+        if (polling != null) polling.cancel();
+    }
+
 }

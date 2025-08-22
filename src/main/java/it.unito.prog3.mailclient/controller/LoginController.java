@@ -57,6 +57,7 @@ public class LoginController {
             Stage stage = new Stage();
             stage.setTitle("Mail Client - " + email);
             stage.setScene(scene);
+            stage.setOnCloseRequest(ev -> controller.shutdown());
             stage.show();
 
             // chiudi login
