@@ -41,6 +41,10 @@ public class LoginController {
     public void initialize() {
         hostField.setText("localhost");
         portField.setText("5555");
+        hostField.setEditable(false);
+        hostField.setFocusTraversable(false);
+        portField.setEditable(false);
+        portField.setFocusTraversable(false);
     }
 
     /**

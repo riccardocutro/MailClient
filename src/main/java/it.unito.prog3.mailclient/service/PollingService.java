@@ -48,7 +48,36 @@ public class PollingService extends ScheduledService<Void> {
                             // aggiorna lastId se necessario
                             state.lastIdProperty().set(Math.max(state.lastIdProperty().get(), m.getId()));
                         });
+                        // Notifica
+                        if (!msgs.isEmpty()) {
+                            // mittenti unici, massimo 3
+                            var senders = msgs.stream()
+                                    .map(m -> m.getFrom())
+                                    .distinct()
+                                    .limit(3)
+                                    .toList();
+
+                            String title = msgs.size() == 1 ? "Nuovo messaggio" : ("Nuovi messaggi: " + msgs.size());
+                            String body;
+                            if (senders.size() == 1) {
+                                body = "Da: " + senders.get(0);
+                            } else {
+                                body = "Da: " + String.join(", ", senders) + (msgs.size() > senders.size() ? " ..." : "");
+                            }
+
+                            // Alert non bloccante
+                            new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION, body) {{
+                                setTitle(title);
+                                setHeaderText(null);
+                            }}.show();
+
+                            // beep
+                            try { java.awt.Toolkit.getDefaultToolkit().beep(); } catch (Throwable ignored) {}
+                        }
+
+
                     });
+
                 }
                 return null;
             }

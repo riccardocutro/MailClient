@@ -9,8 +9,8 @@
     <Label text="Mail Client" style="-fx-font-size:18; -fx-font-weight:bold;"/>
     <TextField fx:id="emailField" promptText="you@mail.com" prefWidth="280"/>
     <HBox spacing="8">
-        <TextField fx:id="hostField" promptText="localhost" prefWidth="160"/>
-        <TextField fx:id="portField" promptText="5555" prefWidth="100"/>
+        <TextField fx:id="hostField" promptText="localhost" prefWidth="160" editable="false"/>
+        <TextField fx:id="portField" promptText="5555" prefWidth="100" editable="false"/>
     </HBox>
     <Button text="Entra" onAction="#onLogin"/>
     <Label fx:id="errorLabel" textFill="#dc2626"/>
