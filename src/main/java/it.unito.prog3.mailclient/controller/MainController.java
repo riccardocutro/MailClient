@@ -23,6 +23,10 @@ public class MainController {
     private ClientState state;       // stato condiviso (inbox, utente)
     private PollingService polling;  // servizio di polling per aggiornare la inbox periodicamente
 
+    private static final java.util.regex.Pattern EMAIL_RE =
+            java.util.regex.Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}");
+
+
     // Inizializzazione del controller: setta core, stato e avvia il polling
     public void init(ClientCore core, ClientState state) {
         this.core = core;
@@ -67,6 +71,7 @@ public class MainController {
         // riempi le etichette con i dati del messaggio
         subjectLabel.setText(it.getSubject());
         fromLabel.setText("Da: " + it.getFrom());
+        toLabel.setText("A: " + String.join(", ", it.getTo()));
         dateLabel.setText("Data: " + it.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
 
         // campo "To" non mostrato (vuoto), ma puoi implementare se serve
@@ -99,6 +104,11 @@ public class MainController {
         java.util.LinkedHashSet<String> recipients = new java.util.LinkedHashSet<>();
         recipients.add(it.getFrom());
         recipients.addAll(it.getTo());
+        //se sembra un inoltrato, si prova a prendere la mail dal corpo
+        if (it.getSubject() != null && it.getSubject().toLowerCase().startsWith("fwd:")) {
+            var m = EMAIL_RE.matcher(it.getBody() == null ? "" : it.getBody());
+            while (m.find()) recipients.add(m.group().toLowerCase());
+        }
         recipients.remove(my); // rimuovi il tuo indirizzo
 
         if (recipients.isEmpty()) {
@@ -108,7 +118,6 @@ public class MainController {
         }
 
         String toCsv = String.join(",", recipients);
-        // se già inizia con "Re:" non aggiungere un altro
         String subj = it.getSubject().startsWith("Re:") ? it.getSubject() : "Re: " + it.getSubject();
         String body = "\n\n--- Risposta a tutti ---\n" + it.getBody();
 
@@ -119,10 +128,20 @@ public class MainController {
     @FXML private void onForward() {
         var it = inboxList.getSelectionModel().getSelectedItem();
         if (it == null) return;
+
+        String header = "---------- Messaggio inoltrato ----------\n"
+                + "Da: " + it.getFrom() + "\n"
+                + "A: " + String.join(", ", it.getTo()) + "\n"
+                + "Data: " + it.getDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + "\n"
+                + "Oggetto: " + it.getSubject() + "\n"
+                + "----------------------------------------\n\n";
+
+        String newBody = header + it.getBody();
+
         openCompose(new ComposePrefill(
                 "",
                 "Fwd: " + it.getSubject(),
-                "\n\n--- Inoltrato ---\n" + it.getPreview()
+                newBody
         ));
     }
 
